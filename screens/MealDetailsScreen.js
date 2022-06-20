@@ -7,16 +7,28 @@ import {
   ScrollView,
 } from "react-native";
 import { MEALS } from "../data/dummy-data";
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import IconButton from "../components/IconButton";
+import { FavoriteContext } from "../store/context/favoritesContext";
+
 
 function MealDetailsScreen({ route, navigation }) {
+  const favoritesMealsContext = useContext(FavoriteContext)
+
   const mealId = route.params.mealId;
 
   const mealDetails = MEALS.find((meal) => meal.id === mealId);
 
-  function onPressHandler() {
-    console.log("PRESSED");
+  const isMealFavorite = favoritesMealsContext.ids.includes(mealId);
+
+
+  function changeFavoritesStatusHandler() {
+    if(isMealFavorite){
+      favoritesMealsContext.removeFavorite(mealId);
+    }
+    else{
+      favoritesMealsContext.addFavorite(mealId)
+    }
   }
 
   useLayoutEffect(() => {
@@ -25,8 +37,8 @@ function MealDetailsScreen({ route, navigation }) {
         return (
           <IconButton
             title="Tap me"
-            onPress={onPressHandler}
-            icon="star"
+            onPress={changeFavoritesStatusHandler}
+            icon={isMealFavorite ? "star" :"star-outline"} 
             color="white"
           />
         );
